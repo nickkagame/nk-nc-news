@@ -7,7 +7,6 @@ exports.getWelcomeMsg = (request, response, next) => {
 
 exports.getTopics = (request, response, next) => {
     fetchTopics().then((topics) => {
-        console.log(topics)
         response.status(200).send({topics: topics})
-    })
+    }).catch(next)
     }
