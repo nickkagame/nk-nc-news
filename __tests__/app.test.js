@@ -207,5 +207,14 @@ describe("APP", () => {
           });
       });
     });
+    describe('PATCH - update votes', () => {
+        test('will respond with 200', () => {
+          const votesObj = { inc_votes : 1 }
+          return request(app)
+          .patch('/api/articles/1')
+          .send(votesObj)
+          .expect(200)
+        })
+    });
   });
 });

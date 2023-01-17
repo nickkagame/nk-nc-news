@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 
-const {getWelcomeMsg, getTopics, getArticles, getArticlesById,getArticleComments} = require("./controllers");
+const {getWelcomeMsg, getTopics, getArticles, getArticlesById,getArticleComments, updateVotes} = require("./controllers");
+
+app.use(express.json())
 
 app.get('/api/', getWelcomeMsg);
 
@@ -13,6 +15,8 @@ app.get('/api/articles', getArticles)
 app.get('/api/articles/:article_id', getArticlesById)
 
 app.get('/api/articles/:article_id/comments', getArticleComments)
+
+app.patch('/api/articles/:article_id', updateVotes)
 
 app.use((err, request, response, next) => {
     if (err.status){

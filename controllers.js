@@ -1,4 +1,4 @@
-const {fetchTopics, fetchArticles, fetchArticleById, fetchArticleComments} = require('./models')
+const {fetchTopics, fetchArticles, fetchArticleById, fetchArticleComments, patchVotes} = require('./models')
 
 exports.getWelcomeMsg = (request, response, next) => {
     response.status(200).send({msg: "Welcome!"})
@@ -32,4 +32,11 @@ exports.getArticleComments = (request, response, next) => {
         .then((comments) => {
         response.status(200).send({comments: comments})
     }).catch(next)
+}
+
+exports.updateVotes = (request, response, next) => {
+    const votes = request.body.msg;
+    const {article_id} = request.params
+    patchVotes(votes, article_id)
+    response.status(200).send({})
 }

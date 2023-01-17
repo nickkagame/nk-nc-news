@@ -46,3 +46,7 @@ exports.fetchArticleById = (article_id) => {
       return comments.rows
     })
   }
+
+  exports.patchVotes = () => {
+    
+  }
