@@ -182,7 +182,7 @@ describe("APP", () => {
             });
           });
       });
-      test("should return an array with array containing correct comments", () => {
+      test("error handling - should return 404 error message with valid but non-existant path", () => {
         return request(app)
           .get("/api/articles/500/comments")
           .expect(404)

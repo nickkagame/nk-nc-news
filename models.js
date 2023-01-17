@@ -40,8 +40,8 @@ exports.fetchArticleById = (article_id) => {
   if(acceptedInput.test(article_id) === false) {
     return Promise.reject({status: 400, msg: 'bad article request'})
   }
-
-    return db.query(`SELECT * FROM comments  WHERE article_id = ${article_id}`)
+    const query = `SELECT * FROM comments  WHERE article_id = $1`
+    return db.query(query, [article_id])
     .then((comments) => {
       return comments.rows
     })
