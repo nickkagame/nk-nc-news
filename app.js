@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
+
 const {getWelcomeMsg, getTopics, getArticles, getArticlesById} = require("./controllers");
 
 app.get('/api/', getWelcomeMsg);
 
 app.get('/api/topics', getTopics);
+
 
 app.get('/api/articles', getArticles)
 
@@ -22,6 +24,7 @@ app.use((err, request, response, next) => {
 
 app.use((err, request, response, next) => {
     if (err.code === '22PO2' || err.code === '42703') {
+
         response.status(400).send({msg: "Bad Request"})
     } else {
         next(err)
