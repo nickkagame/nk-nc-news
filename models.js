@@ -27,9 +27,22 @@ exports.fetchArticleById = (article_id) => {
   }
   return db.query(`SELECT * FROM articles WHERE article_id = ${article_id}`)
   .then((article)=> {
-    if(article.rows.length < 1){ 
+    if(article.rowCount === 0){ 
       return Promise.reject({status: 404, msg: 'article not found'})
     }
     return article.rows.pop()
+    })
+  }
+
+  exports.fetchArticleComments = (article_id) => {
+    const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/
+)
+  if(acceptedInput.test(article_id) === false) {
+    return Promise.reject({status: 400, msg: 'bad article request'})
+  }
+    const query = `SELECT * FROM comments  WHERE article_id = $1`
+    return db.query(query, [article_id])
+    .then((comments) => {
+      return comments.rows
     })
   }

@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const {getWelcomeMsg, getTopics, getArticles, getArticlesById} = require("./controllers");
+const {getWelcomeMsg, getTopics, getArticles, getArticlesById,getArticleComments} = require("./controllers");
 
 app.get('/api/', getWelcomeMsg);
 
@@ -12,10 +12,10 @@ app.get('/api/articles', getArticles)
 
 app.get('/api/articles/:article_id', getArticlesById)
 
+app.get('/api/articles/:article_id/comments', getArticleComments)
+
 app.use((err, request, response, next) => {
-    console.log(err)
     if (err.status){
-        console.log(err)
         response.status(err.status).send({msg: err.msg})
     } else {
         next(err)
