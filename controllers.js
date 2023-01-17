@@ -2,6 +2,7 @@ const {fetchTopics, fetchArticles, fetchArticleById} = require('./models')
 
 exports.getWelcomeMsg = (request, response, next) => {
     response.status(200).send({msg: "Welcome!"})
+}
 
 exports.getTopics = (request, response, next) => {
     fetchTopics().then((topics) => {

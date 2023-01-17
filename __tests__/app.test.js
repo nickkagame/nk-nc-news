@@ -39,6 +39,7 @@ describe("APP", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.topics.length).toBeGreaterThan(0);
+          expect(body.topics).toHaveLength(3)
           body.topics.forEach((topic) => {
             expect(topic).toHaveProperty("slug");
             expect(topic).toHaveProperty("description");
@@ -54,10 +55,11 @@ describe("APP", () => {
             expect(Array.isArray(body.articles)).toBe(true);
           });
       });
-      test("should return an array containing correct objects with correct properties", () => {
+      test("should return an array containing correct number of objects with correct properties", () => {
         return request(app)
           .get("/api/articles")
           .then(({ body }) => {
+            expect(body.articles).toHaveLength(12)
             body.articles.forEach((article) => {
               expect(article).toHaveProperty("author");
               expect(article).toHaveProperty("title");
