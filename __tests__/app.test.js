@@ -5,10 +5,13 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
 
-
 beforeEach(() => seed(testData));
 
-describe.only("APP", () => {
+afterAll(() => {
+    return db.end();
+  });  
+
+describe("APP", () => {
   describe("get welcome message", () => {
     test("returns a status code of 200", () => {
       return request(app).get("/api/").expect(200);
@@ -70,8 +73,62 @@ describe.only("APP", () => {
         return request(app)
           .get("/api/articles")
           .then(({ body }) => {
-            for(let i = 0; i < body.articles.length-1; i++)
-                expect(new Date (body.articles[i].created_at)).toBeAfter(new Date((body.articles[i+1].created_at)))
+            for (let i = 0; i < body.articles.length - 1; i++)
+              expect(new Date(body.articles[i].created_at)).toBeAfter(
+                new Date(body.articles[i + 1].created_at)
+              );
+          });
+      });
+    });
+    describe("/api/articles/:article_id", () => {
+      test("should return the correct article object with the correct properties", () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.author).toBe('butter_bridge')
+            expect(body.article).toHaveProperty(`author`);
+            expect(body.article).toHaveProperty(`title`);
+            expect(body.article).toHaveProperty(`article_id`);
+            expect(body.article).toHaveProperty(`body`);
+            expect(body.article).toHaveProperty(`topic`);
+            expect(body.article).toHaveProperty(`created_at`);
+            expect(body.article).toHaveProperty(`votes`);
+            expect(body.article).toHaveProperty(`article_img_url`);
+          });
+      });
+      test("should return the correct article object with the correct properties", () => {
+        return request(app)
+          .get("/api/articles/4")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.author).toBe('rogersop')
+            expect(body.article).toHaveProperty(`author`);
+            expect(body.article).toHaveProperty(`title`);
+            expect(body.article).toHaveProperty(`article_id`);
+            expect(body.article).toHaveProperty(`body`);
+            expect(body.article).toHaveProperty(`topic`);
+            expect(body.article).toHaveProperty(`created_at`);
+            expect(body.article).toHaveProperty(`votes`);
+            expect(body.article).toHaveProperty(`article_img_url`);
+          });
+      });
+      test("error handling - should return 400 error with bad request / SQL injection", () => {
+        return request(app)
+          .get("/api/articles/t")
+          .expect(400)
+          .then(({ body }) => {
+            console.log(body)
+            expect(body.msg).toBe('bad article request')
+          });
+      });
+      test("error handling - should return 404 error with valid but non-existant artcile id", () => {
+        return request(app)
+          .get("/api/articles/124125")
+          .expect(404)
+          .then(({ body }) => {
+            console.log(body)
+            expect(body.msg).toBe('article not found')
           });
       });
     });
