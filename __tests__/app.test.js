@@ -120,20 +120,57 @@ describe("APP", () => {
           .get("/api/articles/t")
           .expect(400)
           .then(({ body }) => {
-            console.log(body)
             expect(body.msg).toBe('bad article request')
           });
       });
-      test("error handling - should return 404 error with valid but non-existant artcile id", () => {
+      test("error handling - should return 404 error with valid but non-existant article id", () => {
         return request(app)
           .get("/api/articles/124125")
           .expect(404)
           .then(({ body }) => {
-            console.log(body)
             expect(body.msg).toBe('article not found')
           });
       });
     });
+    describe('7/POST/api/articles/articleid/comment', () => {
+      const commentToAdd = {
+        username: 'arteta12521',
+        body: 'This article is amazing.  This has changed my life' 
+      }
+      test('responds with an object with the posted comment / correct properties', () => {
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(commentToAdd)
+        .expect(201)
+        .then(({body}) => {
+          expect(body.commentAdded).toHaveProperty("comment_id");
+          expect(body.commentAdded).toHaveProperty("article_id");
+          expect(body.commentAdded).toHaveProperty("body");
+          expect(body.commentAdded).toHaveProperty("author");
+          expect(body.commentAdded).toHaveProperty("created_at");
+          expect(body.commentAdded).toHaveProperty("votes")
+        })
+      })
+      test("error handling - should return 404 error with valid but non-existant article id", () => {
+        return request(app)
+          .post("/api/articles/124125/comments")
+          .send(commentToAdd)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe('article not found')
+          });
+      });
+      test("error handling - should return 400 error with bad request / SQL injection", () => {
+        return request(app)
+          .post("/api/articles/t/comments")
+          .send(commentToAdd)
+          .expect(400)
+          .then(({ body }) => {
+            console.log(body)
+            expect(body.msg).toBe('bad post request')
+          });
+      });
+    })
   });
 });
 
