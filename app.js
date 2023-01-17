@@ -2,11 +2,15 @@ const express = require('express');
 const app = express();
 const {getWelcomeMsg, getTopics, getArticles} = require("./controllers");
 
+
+
 app.get('/api/', getWelcomeMsg);
 
 app.get('/api/topics', getTopics);
 
+
 app.get('/api/articles', getArticles)
+
 
 app.use((err, request, response, next) => {
     // console.log(err)

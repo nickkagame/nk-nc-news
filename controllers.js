@@ -1,4 +1,6 @@
+
 const {fetchTopics, fetchArticles} = require('./models')
+
 
 exports.getWelcomeMsg = (request, response, next) => {
     response.status(200).send({msg: "Welcome!"})
@@ -16,3 +18,5 @@ exports.getArticles = (request, response, next) => {
         response.status(200).send({articles: articles})
     })
 }
+
+    }
