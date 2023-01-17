@@ -60,10 +60,3 @@ exports.postComment = (comment, article_id) => {
       })
     })
 };
-
-//     `INSERT INTO comments (article_id, body, author) VALUES ($1, $2) RETURNING *;`,
-//   [article_id, comment.body]
-//   ).then((result) => {
-//       console.log(result.rows)
-//   })
-// }
