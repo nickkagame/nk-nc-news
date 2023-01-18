@@ -1,4 +1,3 @@
-
 const request = require("supertest");
 const app = require("../app");
 const db = require("../db/connection");
@@ -8,8 +7,8 @@ const testData = require("../db/data/test-data/index");
 beforeEach(() => seed(testData));
 
 afterAll(() => {
-    return db.end();
-  });  
+  return db.end();
+});
 
 describe("APP", () => {
   describe("get welcome message", () => {
@@ -39,7 +38,7 @@ describe("APP", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.topics.length).toBeGreaterThan(0);
-          expect(body.topics).toHaveLength(3)
+          expect(body.topics).toHaveLength(3);
           body.topics.forEach((topic) => {
             expect(topic).toHaveProperty("slug");
             expect(topic).toHaveProperty("description");
@@ -59,7 +58,7 @@ describe("APP", () => {
         return request(app)
           .get("/api/articles")
           .then(({ body }) => {
-            expect(body.articles).toHaveLength(12)
+            expect(body.articles).toHaveLength(12);
             body.articles.forEach((article) => {
               expect(article).toHaveProperty("author");
               expect(article).toHaveProperty("title");
@@ -88,7 +87,7 @@ describe("APP", () => {
           .get("/api/articles/1")
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.author).toBe('butter_bridge')
+            expect(body.article.author).toBe("butter_bridge");
             expect(body.article).toHaveProperty(`author`);
             expect(body.article).toHaveProperty(`title`);
             expect(body.article).toHaveProperty(`article_id`);
@@ -104,7 +103,7 @@ describe("APP", () => {
           .get("/api/articles/4")
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.author).toBe('rogersop')
+            expect(body.article.author).toBe("rogersop");
             expect(body.article).toHaveProperty(`author`);
             expect(body.article).toHaveProperty(`title`);
             expect(body.article).toHaveProperty(`article_id`);
@@ -129,6 +128,81 @@ describe("APP", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).toBe('article not found')
+          });
+      });
+    });
+    describe("Testing GET /api/articles/:article_id/comments", () => {
+      test("should return an array", () => {
+        return request(app)
+          .get("/api/articles/3/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(Array.isArray(body.comments)).toBe(true);
+          });
+      });
+      test("should return an array with array containing correct comments", () => {
+        return request(app)
+          .get("/api/articles/3/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).toEqual([
+              {
+                comment_id: 10,
+                body: "git push origin master",
+                votes: 0,
+                author: "icellusedkars",
+                article_id: 3,
+                created_at: "2020-06-20T07:24:00.000Z",
+              },
+              {
+                comment_id: 11,
+                body: "Ambidextrous marsupial",
+                votes: 0,
+                author: "icellusedkars",
+                article_id: 3,
+                created_at: "2020-09-19T23:10:00.000Z",
+              },
+            ]);
+          });
+      });
+      test("should return an array with array containing correct comments", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).toHaveLength(11);
+            body.comments.forEach((comment) => {
+              expect(comment).toHaveProperty("comment_id");
+              expect(comment).toHaveProperty("votes");
+              expect(comment).toHaveProperty("created_at");
+              expect(comment).toHaveProperty("author");
+              expect(comment).toHaveProperty("body");
+              expect(comment).toHaveProperty("article_id");
+            });
+          });
+      });
+      test("error handling - should return 404 error message with valid but non-existant path", () => {
+        return request(app)
+          .get("/api/articles/500/comments")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("article not found");
+          });
+      });
+      test("error handling - should return 400 error with bad request / prevent SQL injection", () => {
+        return request(app)
+          .get("/api/articles/t/comments")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("bad article request");
+          });
+      });
+      test("will return 200 and empty result if article does not have comments", () => {
+        return request(app)
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).toEqual([]);
           });
       });
     });
@@ -201,4 +275,3 @@ describe("APP", () => {
     })
   });
 });
-

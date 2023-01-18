@@ -5,6 +5,8 @@ const {
   postComment,
 } = require("./models");
 
+
+
 exports.getWelcomeMsg = (request, response, next) => {
   response.status(200).send({ msg: "Welcome!" });
 };
@@ -27,7 +29,6 @@ exports.getArticles = (request, response, next) => {
 
 exports.getArticlesById = (request, response, next) => {
   const { article_id } = request.params;
-  // console.log(article_id)
   fetchArticleById(article_id)
     .then((article) => {
       response.status(200).send({ article });

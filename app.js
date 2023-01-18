@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 
+
 const {
   getWelcomeMsg,
   getTopics,
@@ -8,6 +9,7 @@ const {
   getArticlesById,
   sendComment
 } = require("./controllers");
+
 
 app.use(express.json());
 
@@ -19,7 +21,9 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id", getArticlesById);
 
+
 app.post("/api/articles/:article_id/comments", sendComment);
+
 
 app.use((err, request, response, next) => {
   if (err.status) {
