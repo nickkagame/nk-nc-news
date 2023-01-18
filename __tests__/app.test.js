@@ -119,7 +119,6 @@ describe("APP", () => {
           .get("/api/articles/t")
           .expect(400)
           .then(({ body }) => {
-            console.log(body);
             expect(body.msg).toBe("bad article request");
           });
       });
@@ -207,14 +206,82 @@ describe("APP", () => {
           });
       });
     });
-    describe('PATCH - update votes', () => {
-        test('will respond with 200', () => {
-          const votesObj = { inc_votes : 1 }
-          return request(app)
-          .patch('/api/articles/1')
+    describe("PATCH - update votes", () => {
+      test("will respond with 200", () => {
+        const votesObj = { inc_votes: 1 };
+        return request(app).patch("/api/articles/1").send(votesObj).expect(200);
+      });
+      test("will respond with single article object with correct properties", () => {
+        const votesObj = { inc_votes: 1 };
+        return request(app)
+          .patch("/api/articles/1")
           .send(votesObj)
           .expect(200)
+          .then(({ body }) => {
+            expect(Object.keys(body.article)).toHaveLength(8)
+            expect(body.article).toEqual({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              body: expect.any(String),
+              topic: expect.any(String),
+              created_at: "2020-07-09T20:11:00.000Z",
+              votes: expect.any(Number),
+              article_img_url: expect.any(String)
+            });
+
+            }) 
+      });
+      test("will respond with single article object with votes incremented +1", () => {
+        const votesObj = { inc_votes: 1 };
+        return request(app)
+          .patch("/api/articles/1")
+          .send(votesObj)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.votes).toEqual(101)
+          });
+      });
+      test("will respond with article object with votes incremented -100", () => {
+        const votesObj = { inc_votes: -100 };
+        return request(app)
+          .patch("/api/articles/1")
+          .send(votesObj)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.votes).toEqual(0)
+          });
+      });
+      test('error handling - will return 400 for invalid request', () => {
+        const votesObj = { inc_votes: -100 };
+        return request(app)
+        .patch("/api/articles/qwrq")
+        .send(votesObj)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe('bad article request')
         })
+      })
+      test('error handling - will return 404 for valid but non existant article request', () => {
+        const votesObj = { inc_votes: -100 };
+        return request(app)
+        .patch("/api/articles/12592")
+        .send(votesObj)
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe('article not found')
+        })
+      })
+      test('error handling - will return 400 for invalid inc_votes input', () => {
+        const votesObj = { inc_votes: 'string' };
+        return request(app)
+        .patch("/api/articles/1")
+        .send(votesObj)
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe('invalid votes input')
+        })
+      })
     });
   });
 });

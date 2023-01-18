@@ -47,6 +47,22 @@ exports.fetchArticleById = (article_id) => {
     })
   }
 
-  exports.patchVotes = () => {
-    
+  exports.patchVotes = (votes, article_id) => {
+
+    const acceptedInput = new RegExp(/[-]?\d+(\.)?(\d+)?/
+)
+  if(acceptedInput.test(article_id) === false) {
+    return Promise.reject({status: 400, msg: 'bad article request'})
+  }
+
+  if(acceptedInput.test(votes) === false) {
+    return Promise.reject({status: 400, msg: 'invalid votes input'})
+  }
+    const query = `UPDATE articles 
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *`
+    return db.query(query, [votes, article_id]).then((article) => {
+      return article.rows[0]
+    })
   }
