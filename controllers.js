@@ -4,7 +4,10 @@ const {
   fetchArticleById,
   fetchArticleComments,
   patchVotes,
+  postComment
 } = require("./models");
+
+
 
 exports.getWelcomeMsg = (request, response, next) => {
   response.status(200).send({ msg: "Welcome!" });
@@ -58,4 +61,13 @@ exports.updateVotes = (request, response, next) => {
       response.status(200).send({ article });
     })
     .catch(next);
+
+exports.sendComment = (request, response, next) => {
+  const comment = request.body;
+  const article_id = request.params.article_id;
+  postComment(comment, article_id).then((comment) => {
+    response.status(201).send({ commentAdded: comment });
+  })
+  .catch(next);
+
 };
