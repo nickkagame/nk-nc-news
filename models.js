@@ -37,6 +37,19 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
+exports.fetchArticleComments = (article_id) => {
+  const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/
+)
+if(acceptedInput.test(article_id) === false) {
+  return Promise.reject({status: 400, msg: 'bad article request'})
+}
+  const query = `SELECT * FROM comments  WHERE article_id = $1`
+  return db.query(query, [article_id])
+  .then((comments) => {
+    return comments.rows
+  })
+}
+
 exports.postComment = (comment, article_id) => {
   //error handler 1 - comment to short or object is in wrong format
   if (comment.body.length < 10 || Object.keys(comment).length > 2) {
