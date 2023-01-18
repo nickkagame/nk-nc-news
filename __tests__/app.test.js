@@ -134,7 +134,7 @@ describe("APP", () => {
     });
     describe('7/POST/api/articles/articleid/comment', () => {
       const commentToAdd = {
-        username: 'arteta12521',
+        username: 'butter_bridge',
         body: 'This article is amazing.  This has changed my life' 
       }
       test('responds with an object with the posted comment / correct properties', () => {
@@ -143,6 +143,7 @@ describe("APP", () => {
         .send(commentToAdd)
         .expect(201)
         .then(({body}) => {
+          expect(Object.keys(body.commentAdded)).toHaveLength(6)
           expect(body.commentAdded).toHaveProperty("comment_id");
           expect(body.commentAdded).toHaveProperty("article_id");
           expect(body.commentAdded).toHaveProperty("body");
@@ -166,8 +167,35 @@ describe("APP", () => {
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            console.log(body)
             expect(body.msg).toBe('bad post request')
+          });
+      });
+      test("error handling - should return 400 error with bad request for comment that is too short or too short", () => {
+        const commentToAdd = {
+          username: 'butter_bridge',
+          body: 'This' 
+        }
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(commentToAdd)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('bad post request - comment format error')
+          });
+      });
+      test("error handling - should return 400 error with bad request for comment that has wrong keys", () => {
+        const commentToAdd = {
+          username: 'butter_bridge',
+          body: 'This',
+          id: '12513513515151512' 
+        }
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(commentToAdd)
+          .expect(400)
+          .then(({ body }) => {
+            console.log(body)
+            expect(body.msg).toBe('bad post request - comment format error')
           });
       });
     })

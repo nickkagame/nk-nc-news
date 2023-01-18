@@ -38,25 +38,33 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.postComment = (comment, article_id) => {
-   const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/);
+  //error handler 1 - comment to short or object is in wrong format
+  if (comment.body.length < 10 || Object.keys(comment).length > 2) {
+    return Promise.reject({
+      status: 400,
+      msg: "bad post request - comment format error",
+    });
+  }
+  //error handler 2 - non-number article_id input
+  const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/);
   if (acceptedInput.test(article_id) === false) {
     return Promise.reject({ status: 400, msg: "bad post request" });
   }
-  const query = `SELECT author FROM articles WHERE article_id = $1`
-  return db.query(query, [article_id])
-    .then((result) => {
-      if(result.rowCount === 0) {
-        return Promise.reject({ status: 404, msg: "article not found" })
-      }
+
+  const query = `SELECT author FROM articles WHERE article_id = $1`;
+  return db.query(query, [article_id]).then((result) => {
+    if (result.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "article not found" });
+    }
     const author = result.rows[0].author;
     return db
-    .query(`INSERT INTO comments (article_id, body, author) VALUES ($1, $2, $3) RETURNING *;`,
-      [article_id, 
-      comment.body, 
-      author]
-      ).then((result) => {
-        let comment = result.rows.pop()
-        return comment
-      })
-    })
+      .query(
+        `INSERT INTO comments (article_id, body, author) VALUES ($1, $2, $3) RETURNING *;`,
+        [article_id, comment.body, comment.username]
+      )
+      .then((result) => {
+        let comment = result.rows.pop();
+        return comment;
+      });
+  });
 };
