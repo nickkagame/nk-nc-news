@@ -8,7 +8,8 @@ const {
   getArticles,
   getArticlesById,
   sendComment,
-  getArticleComments
+  getArticleComments,
+  getUsers
 } = require("./controllers");
 
 
@@ -25,6 +26,8 @@ app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles/:article_id/comments", getArticleComments)
 
 app.post("/api/articles/:article_id/comments", sendComment);
+
+app.get('/api/users', getUsers)
 
 
 app.use((err, request, response, next) => {
