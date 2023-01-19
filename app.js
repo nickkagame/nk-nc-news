@@ -10,6 +10,7 @@ const {
   sendComment,
   getArticleComments,
   getUsers
+  updateVotes
 } = require("./controllers");
 
 
@@ -29,6 +30,7 @@ app.post("/api/articles/:article_id/comments", sendComment);
 
 app.get('/api/users', getUsers)
 
+app.patch('/api/articles/:article_id', updateVotes)
 
 app.use((err, request, response, next) => {
   if (err.status) {
@@ -48,7 +50,8 @@ app.use((err, request, response, next) => {
 
 app.use((err, request, response, next) => {
     console.log(err)
-  response.status(500).send({ msg: "Internal Server Error" });
-});
+    response.status(500).send({msg: "Internal Server Error"})
+})
+    
 
 module.exports = app;

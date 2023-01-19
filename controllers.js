@@ -4,7 +4,8 @@ const {
   fetchArticleById,
   fetchArticleComments,
   postComment,
-  fetchUsers
+  fetchUsers,
+  patchVotes
 } = require("./models");
 
 exports.getWelcomeMsg = (request, response, next) => {
@@ -48,6 +49,18 @@ exports.getArticleComments = (request, response, next) => {
     .catch(next);
 };
 
+exports.updateVotes = (request, response, next) => {
+  const votes = request.body.inc_votes;
+  const { article_id } = request.params;
+  fetchArticleById(article_id)
+    .then(() => {
+      return patchVotes(votes, article_id);
+    })
+    .then((article) => {
+      response.status(200).send({ article });
+    })
+    .catch(next);
+
 exports.sendComment = (request, response, next) => {
   const comment = request.body;
   const article_id = request.params.article_id;
@@ -63,4 +76,4 @@ exports.getUsers = (request, response, next) => {
     response.status(200).send({ users });
   });
   
-};
+
