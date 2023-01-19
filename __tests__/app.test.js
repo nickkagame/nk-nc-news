@@ -470,7 +470,7 @@ describe("APP", () => {
             });
         });
     });
-    describe("9_GET_USERS", () => {
+      describe("9_GET_USERS", () => {
       test("should return an array", () => {
         return request(app)
           .get("/api/users")
@@ -496,6 +496,13 @@ describe("APP", () => {
 
       });
     });
+  });
+  describe('12 DELETE COMMENTS', () => {
+    test('will return a 204 once completed', () => {
+      return request(app)
+      .delete('/api/comments/3')
+      .expect(204)
+    })
   });
 });
 })
