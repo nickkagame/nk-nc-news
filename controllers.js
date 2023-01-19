@@ -65,6 +65,7 @@ exports.updateVotes = (request, response, next) => {
       response.status(200).send({ article });
     })
     .catch(next);
+  }
 
 exports.sendComment = (request, response, next) => {
   const comment = request.body;
@@ -80,5 +81,4 @@ exports.getUsers = (request, response, next) => {
   fetchUsers().then((users) => {
     response.status(200).send({ users });
   });
-  
-
+}

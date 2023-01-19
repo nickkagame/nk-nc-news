@@ -9,7 +9,7 @@ const {
   getArticlesById,
   sendComment,
   getArticleComments,
-  getUsers
+  getUsers,
   updateVotes
 } = require("./controllers");
 

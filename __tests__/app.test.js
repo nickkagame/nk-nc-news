@@ -498,12 +498,4 @@ describe("APP", () => {
     });
   });
 });
-
-//   {
-//     title: expect.any(String),
-//     topic: cats,
-//     author: expect.any(String),
-//     body: expect.any(String),
-//     created_at: expect.any(String),
-//     article_img_url: expect.any(String),
-// }
+})
