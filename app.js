@@ -29,6 +29,7 @@ app.post("/api/articles/:article_id/comments", sendComment);
 
 app.use((err, request, response, next) => {
   if (err.status) {
+    console.log(err)
     response.status(err.status).send({ msg: err.msg });
   } else {
     next(err);

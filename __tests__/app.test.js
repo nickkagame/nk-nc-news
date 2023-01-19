@@ -119,7 +119,7 @@ describe("APP", () => {
           .get("/api/articles/t")
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe('bad article request')
+            expect(body.msg).toBe("bad article request");
           });
       });
       test("error handling - should return 404 error with valid but non-existant article id", () => {
@@ -127,7 +127,7 @@ describe("APP", () => {
           .get("/api/articles/124125")
           .expect(404)
           .then(({ body }) => {
-            expect(body.msg).toBe('article not found')
+            expect(body.msg).toBe("article not found");
           });
       });
     });
@@ -206,33 +206,33 @@ describe("APP", () => {
           });
       });
     });
-    describe('7/POST/api/articles/articleid/comment', () => {
+    describe("7/POST/api/articles/articleid/comment", () => {
       const commentToAdd = {
-        username: 'butter_bridge',
-        body: 'This article is amazing.  This has changed my life' 
-      }
-      test('responds with an object with the posted comment / correct properties', () => {
+        username: "butter_bridge",
+        body: "This article is amazing.  This has changed my life",
+      };
+      test("responds with an object with the posted comment / correct properties", () => {
         return request(app)
-        .post("/api/articles/1/comments")
-        .send(commentToAdd)
-        .expect(201)
-        .then(({body}) => {
-          expect(Object.keys(body.commentAdded)).toHaveLength(6)
-          expect(body.commentAdded).toHaveProperty("comment_id");
-          expect(body.commentAdded).toHaveProperty("article_id");
-          expect(body.commentAdded).toHaveProperty("body");
-          expect(body.commentAdded).toHaveProperty("author");
-          expect(body.commentAdded).toHaveProperty("created_at");
-          expect(body.commentAdded).toHaveProperty("votes")
-        })
-      })
+          .post("/api/articles/1/comments")
+          .send(commentToAdd)
+          .expect(201)
+          .then(({ body }) => {
+            expect(Object.keys(body.commentAdded)).toHaveLength(6);
+            expect(body.commentAdded).toHaveProperty("comment_id");
+            expect(body.commentAdded).toHaveProperty("article_id");
+            expect(body.commentAdded).toHaveProperty("body");
+            expect(body.commentAdded).toHaveProperty("author");
+            expect(body.commentAdded).toHaveProperty("created_at");
+            expect(body.commentAdded).toHaveProperty("votes");
+          });
+      });
       test("error handling - should return 404 error with valid but non-existant article id", () => {
         return request(app)
           .post("/api/articles/124125/comments")
           .send(commentToAdd)
           .expect(404)
           .then(({ body }) => {
-            expect(body.msg).toBe('article not found')
+            expect(body.msg).toBe("article not found");
           });
       });
       test("error handling - should return 400 error with bad request / SQL injection", () => {
@@ -241,37 +241,165 @@ describe("APP", () => {
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe('bad post request')
+            expect(body.msg).toBe("bad post request");
           });
       });
       test("error handling - should return 400 error with bad request for comment that is too short or too short", () => {
         const commentToAdd = {
-          username: 'butter_bridge',
-          body: 'This' 
-        }
+          username: "butter_bridge",
+          body: "This",
+        };
         return request(app)
           .post("/api/articles/1/comments")
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe('bad post request - comment format error')
+            expect(body.msg).toBe("bad post request - comment format error");
           });
       });
       test("error handling - should return 400 error with bad request for comment that has wrong keys", () => {
         const commentToAdd = {
-          username: 'butter_bridge',
-          body: 'This',
-          id: '12513513515151512' 
-        }
+          username: "butter_bridge",
+          body: "This",
+          id: "12513513515151512",
+        };
         return request(app)
           .post("/api/articles/1/comments")
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            console.log(body)
-            expect(body.msg).toBe('bad post request - comment format error')
+            expect(body.msg).toBe("bad post request - comment format error");
           });
       });
-    })
+      describe("QUERIES", () => {
+        test("Query returns and array", () => {
+          return request(app)
+            .get("/api/articles/?filter_by=cats")
+            .expect(200)
+            .then(({ body }) => {
+              expect(Array.isArray(body.articles)).toEqual(true);
+            });
+        });
+        test("Query to return articles by topic", () => {
+          return request(app)
+            .get("/api/articles/?topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach((article) => {
+                expect(article.topic).toBe("mitch");
+              });
+            });
+        });
+        test("Query to return articles by topic with correct properties", () => {
+          return request(app)
+            .get("/api/articles/?topic=cats")
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach((article) => {
+                expect(article).toEqual({
+                  article_id: expect.any(Number),
+                  title: expect.any(String),
+                  topic: "cats",
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  comment_count: expect.any(String),
+                  article_img_url: expect.any(String),
+                  votes: expect.any(Number),
+                });
+              });
+            });
+        });
+        test("Query to sort by any column", () => {
+          return request(app)
+            .get("/api/articles/?sort=comment_count")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(+body.articles[i].comment_count).toBeLessThanOrEqual(
+                  +body.articles[i + 1].comment_count
+                );
+            });
+        });
+        test("Query to sort by any column 2", () => {
+          return request(app)
+            .get("/api/articles/?sort=votes")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(+body.articles[i].votes).toBeLessThanOrEqual(
+                  +body.articles[i + 1].votes
+                );
+            });
+        });
+        test("Query to order by decending", () => {
+          return request(app)
+            .get("/api/articles/?order=asc")
+            .expect(200)
+            .then((({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(new Date(body.articles[i].created_at)).toBeBefore(
+                  new Date(body.articles[i + 1].created_at)
+                );
+            })
+            );
+        });
+        test("If query is ommited all articles are returned", () => {
+          return request(app)
+            .get("/api/articles/?topic=")
+            .expect(200)
+            .then((({ body }) => {
+              expect(body.articles).toHaveLength(12)
+              body.articles.forEach((article) => {
+                expect(article).toEqual({
+                  article_id: expect.any(Number),
+                  title: expect.any(String),
+                  topic: expect.any(String),
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  comment_count: expect.any(String),
+                  article_img_url: expect.any(String),
+                  votes: expect.any(Number),
+                });
+              });
+            })
+            );
+        });
+        test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
+          return request(app)
+            .get("/api/articles/?topic=qfq33ofoqbfq")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("bad query request");
+            });
+        });
+        test("error handling - should return 400 error with bad request  when attempting wrong input for ordering", () => {
+          return request(app)
+            .get("/api/articles/?order=ascKILLDATABASE")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("bad query request");
+            });
+        });
+        test("error handling - should return 400 error with bad request when attempting wrong input for sorting", () => {
+          return request(app)
+            .get("/api/articles/?sort=124124")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("bad query request");
+            });
+        });
+      });
+    });
   });
 });
+
+//   {
+//     title: expect.any(String),
+//     topic: cats,
+//     author: expect.any(String),
+//     body: expect.any(String),
+//     created_at: expect.any(String),
+//     article_img_url: expect.any(String),
+// }
