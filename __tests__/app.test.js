@@ -348,10 +348,128 @@ describe("APP", () => {
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            console.log(body);
             expect(body.msg).toBe("bad post request - comment format error");
           });
       });
+      describe("QUERIES", () => {
+        test("Query returns and array", () => {
+          return request(app)
+            .get("/api/articles/?filter_by=cats")
+            .expect(200)
+            .then(({ body }) => {
+              expect(Array.isArray(body.articles)).toEqual(true);
+            });
+        });
+        test("Query to return articles by topic", () => {
+          return request(app)
+            .get("/api/articles/?topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach((article) => {
+                expect(article.topic).toBe("mitch");
+              });
+            });
+        });
+        test("Query to return articles by topic with correct properties", () => {
+          return request(app)
+            .get("/api/articles/?topic=cats")
+            .expect(200)
+            .then(({ body }) => {
+              body.articles.forEach((article) => {
+                expect(article).toEqual({
+                  article_id: expect.any(Number),
+                  title: expect.any(String),
+                  topic: "cats",
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  comment_count: expect.any(String),
+                  article_img_url: expect.any(String),
+                  votes: expect.any(Number),
+                });
+              });
+            });
+        });
+        test("Query to sort by any column", () => {
+          return request(app)
+            .get("/api/articles/?sort=comment_count")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(+body.articles[i].comment_count).toBeLessThanOrEqual(
+                  +body.articles[i + 1].comment_count
+                );
+            });
+        });
+        test("Query to sort by any column 2", () => {
+          return request(app)
+            .get("/api/articles/?sort=votes")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(+body.articles[i].votes).toBeLessThanOrEqual(
+                  +body.articles[i + 1].votes
+                );
+            });
+        });
+        test("Query to order by decending", () => {
+          return request(app)
+            .get("/api/articles/?order=asc")
+            .expect(200)
+            .then((({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(new Date(body.articles[i].created_at)).toBeBefore(
+                  new Date(body.articles[i + 1].created_at)
+                );
+            })
+            );
+        });
+        test("If query is ommited all articles are returned", () => {
+          return request(app)
+            .get("/api/articles/?topic=")
+            .expect(200)
+            .then((({ body }) => {
+              expect(body.articles).toHaveLength(12)
+              body.articles.forEach((article) => {
+                expect(article).toEqual({
+                  article_id: expect.any(Number),
+                  title: expect.any(String),
+                  topic: expect.any(String),
+                  author: expect.any(String),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  comment_count: expect.any(String),
+                  article_img_url: expect.any(String),
+                  votes: expect.any(Number),
+                });
+              });
+            })
+            );
+        });
+        test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
+          return request(app)
+            .get("/api/articles/?topic=qfq33ofoqbfq")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("bad query request");
+            });
+        });
+        test("error handling - should return 400 error with bad request  when attempting wrong input for ordering", () => {
+          return request(app)
+            .get("/api/articles/?order=ascKILLDATABASE")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("bad query request");
+            });
+        });
+        test("error handling - should return 400 error with bad request when attempting wrong input for sorting", () => {
+          return request(app)
+            .get("/api/articles/?sort=124124")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("bad query request");
+            });
+        });
     });
     describe("9_GET_USERS", () => {
       test("should return an array", () => {
@@ -376,6 +494,7 @@ describe("APP", () => {
               });
             });
           });
+
       });
       describe("10 GET COMMENT COUNT", () => {
         test("should return article object with all correct properties and comment count added and that comment count is a digit, not letter", () => {
@@ -401,3 +520,4 @@ describe("APP", () => {
     });
   });
 });
+})
