@@ -5,7 +5,8 @@ const {
   fetchArticleComments,
   postComment,
   fetchUsers,
-  patchVotes
+  patchVotes, 
+  fetchWithCCount
 } = require("./models");
 
 exports.getWelcomeMsg = (request, response, next) => {
@@ -44,7 +45,7 @@ exports.getArticleComments = (request, response, next) => {
       return fetchArticleComments(article_id);
     })
     .then((comments) => {
-      response.status(200).send({ comments: comments });
+      response.status(200).send({ comments});
     })
     .catch(next);
 };
@@ -60,6 +61,7 @@ exports.updateVotes = (request, response, next) => {
       response.status(200).send({ article });
     })
     .catch(next);
+}
 
 exports.sendComment = (request, response, next) => {
   const comment = request.body;
@@ -76,4 +78,5 @@ exports.getUsers = (request, response, next) => {
     response.status(200).send({ users });
   });
   
+};
 
