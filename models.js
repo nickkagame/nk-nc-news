@@ -9,14 +9,47 @@ exports.fetchTopics = () => {
   });
 };
 
-exports.fetchArticles = () => {
+exports.fetchArticles = (topic, sort, order) => {
+
+  const acceptedTopics = ['mitch', 'cats', 'paper', '', undefined];
+  const acceptedSortBys = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'comment_count', 'article_img_url', 'votes', '', undefined];
+  const acceptedOrderBys = ['desc', 'asc', '', undefined];
+  console.log(acceptedTopics.includes(topic))
+
+if(!acceptedTopics.includes(topic) || !acceptedOrderBys.includes(order) || !acceptedSortBys.includes(sort)){
+  return Promise.reject({status: 400, msg: 'bad query request'})
+}
+
+
+  let query = 
+  `SELECT articles.*, COUNT(comments.article_id) AS comment_count
+FROM articles
+LEFT JOIN comments ON articles.article_id = comments.article_id
+GROUP BY articles.article_id `
+  
+  if(sort && !order){
+    query += ` ORDER BY ${sort}`
+  } 
+  if(!sort && !order){
+    query += ` ORDER BY articles.created_at DESC`
+  }
+
+  if(order && !sort){
+    query += ` ORDER BY articles.created_at ${order}`
+  } 
+  if(order & sort){
+    query += ` ORDER BY ${sort} ${order}` 
+  }
+
+  if(topic !== undefined && topic !== ''){
+    query = `SELECT articles.*, COUNT(comments.article_id) AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    WHERE topic = '${topic}'
+    GROUP BY articles.article_id ORDER BY articles.created_at DESC`
+    }
   return db
-    .query(
-      `SELECT articles.*, COUNT(comments.article_id) AS comment_count
-  FROM articles
-  LEFT JOIN comments ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id ORDER BY articles.created_at DESC`
-    )
+    .query(query)
     .then((articles) => {
       return articles.rows;
     });

@@ -34,6 +34,7 @@ app.patch('/api/articles/:article_id', updateVotes)
 
 app.use((err, request, response, next) => {
   if (err.status) {
+    console.log(err)
     response.status(err.status).send({ msg: err.msg });
   } else {
     next(err);

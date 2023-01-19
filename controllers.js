@@ -21,8 +21,12 @@ exports.getTopics = (request, response, next) => {
 };
 
 exports.getArticles = (request, response, next) => {
-  fetchArticles()
+  const { topic } = request.query;
+  const { sort } = request.query;
+  const { order } = request.query;
+  fetchArticles(topic, sort, order)
     .then((articles) => {
+      // console.log(articles)
       response.status(200).send({ articles: articles });
     })
     .catch(next);
@@ -48,6 +52,7 @@ exports.getArticleComments = (request, response, next) => {
     })
     .catch(next);
 };
+
 
 exports.updateVotes = (request, response, next) => {
   const votes = request.body.inc_votes;
