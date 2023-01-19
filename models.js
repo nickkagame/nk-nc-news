@@ -96,7 +96,6 @@ exports.postComment = (comment, article_id) => {
   if (acceptedInput.test(article_id) === false) {
     return Promise.reject({ status: 400, msg: "bad post request" });
   }
-
   const query = `SELECT author FROM articles WHERE article_id = $1`;
   return db.query(query, [article_id]).then((result) => {
     if (result.rowCount === 0) {
@@ -114,3 +113,31 @@ exports.postComment = (comment, article_id) => {
       });
   });
 };
+
+exports.fetchUsers = () => {
+  return db.query(`SELECT * FROM users`)
+  .then((users) => {
+    return users.rows
+  })
+}
+
+  exports.patchVotes = (votes, article_id) => {
+
+    const acceptedInput = new RegExp(/[-]?\d+(\.)?(\d+)?/
+)
+  if(acceptedInput.test(article_id) === false) {
+    return Promise.reject({status: 400, msg: 'bad article request'})
+  }
+
+  if(acceptedInput.test(votes) === false) {
+    return Promise.reject({status: 400, msg: 'invalid votes input'})
+  }
+    const query = `UPDATE articles 
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *`
+    return db.query(query, [votes, article_id]).then((article) => {
+      return article.rows[0]
+    })
+  }
+
