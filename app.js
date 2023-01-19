@@ -9,6 +9,7 @@ const {
   getArticlesById,
   sendComment,
   getArticleComments,
+  getUsers
   updateVotes
 } = require("./controllers");
 
@@ -27,15 +28,9 @@ app.get("/api/articles/:article_id/comments", getArticleComments)
 
 app.post("/api/articles/:article_id/comments", sendComment);
 
-app.patch('/api/articles/:article_id', updateVotes)
+app.get('/api/users', getUsers)
 
-app.use((err, request, response, next) => {
-    if (err.status){
-        response.status(err.status).send({msg: err.msg})
-    } else {
-        next(err)
-    }
-})
+app.patch('/api/articles/:article_id', updateVotes)
 
 app.use((err, request, response, next) => {
   if (err.status) {

@@ -127,7 +127,7 @@ describe("APP", () => {
           .get("/api/articles/124125")
           .expect(404)
           .then(({ body }) => {
-            expect(body.msg).toBe('article not found')
+            expect(body.msg).toBe("article not found");
           });
       });
     });
@@ -206,6 +206,7 @@ describe("APP", () => {
           });
       });
     });
+    
     describe("PATCH - update votes", () => {
       test("will respond with 200", () => {
         const votesObj = { inc_votes: 1 };
@@ -283,33 +284,34 @@ describe("APP", () => {
         })
       })
     });
+    
     describe('7/POST/api/articles/articleid/comment', () => {
       const commentToAdd = {
-        username: 'butter_bridge',
-        body: 'This article is amazing.  This has changed my life' 
-      }
-      test('responds with an object with the posted comment / correct properties', () => {
+        username: "butter_bridge",
+        body: "This article is amazing.  This has changed my life",
+      };
+      test("responds with an object with the posted comment / correct properties", () => {
         return request(app)
-        .post("/api/articles/1/comments")
-        .send(commentToAdd)
-        .expect(201)
-        .then(({body}) => {
-          expect(Object.keys(body.commentAdded)).toHaveLength(6)
-          expect(body.commentAdded).toHaveProperty("comment_id");
-          expect(body.commentAdded).toHaveProperty("article_id");
-          expect(body.commentAdded).toHaveProperty("body");
-          expect(body.commentAdded).toHaveProperty("author");
-          expect(body.commentAdded).toHaveProperty("created_at");
-          expect(body.commentAdded).toHaveProperty("votes")
-        })
-      })
+          .post("/api/articles/1/comments")
+          .send(commentToAdd)
+          .expect(201)
+          .then(({ body }) => {
+            expect(Object.keys(body.commentAdded)).toHaveLength(6);
+            expect(body.commentAdded).toHaveProperty("comment_id");
+            expect(body.commentAdded).toHaveProperty("article_id");
+            expect(body.commentAdded).toHaveProperty("body");
+            expect(body.commentAdded).toHaveProperty("author");
+            expect(body.commentAdded).toHaveProperty("created_at");
+            expect(body.commentAdded).toHaveProperty("votes");
+          });
+      });
       test("error handling - should return 404 error with valid but non-existant article id", () => {
         return request(app)
           .post("/api/articles/124125/comments")
           .send(commentToAdd)
           .expect(404)
           .then(({ body }) => {
-            expect(body.msg).toBe('article not found')
+            expect(body.msg).toBe("article not found");
           });
       });
       test("error handling - should return 400 error with bad request / SQL injection", () => {
@@ -318,37 +320,62 @@ describe("APP", () => {
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe('bad post request')
+            expect(body.msg).toBe("bad post request");
           });
       });
       test("error handling - should return 400 error with bad request for comment that is too short or too short", () => {
         const commentToAdd = {
-          username: 'butter_bridge',
-          body: 'This' 
-        }
+          username: "butter_bridge",
+          body: "This",
+        };
         return request(app)
           .post("/api/articles/1/comments")
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            expect(body.msg).toBe('bad post request - comment format error')
+            expect(body.msg).toBe("bad post request - comment format error");
           });
       });
       test("error handling - should return 400 error with bad request for comment that has wrong keys", () => {
         const commentToAdd = {
-          username: 'butter_bridge',
-          body: 'This',
-          id: '12513513515151512' 
-        }
+          username: "butter_bridge",
+          body: "This",
+          id: "12513513515151512",
+        };
         return request(app)
           .post("/api/articles/1/comments")
           .send(commentToAdd)
           .expect(400)
           .then(({ body }) => {
-            console.log(body)
-            expect(body.msg).toBe('bad post request - comment format error')
+            console.log(body);
+            expect(body.msg).toBe("bad post request - comment format error");
           });
       });
-    })
+    });
+    describe("9_GET_USERS", () => {
+      test("should return an array", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(({ body }) => {
+            expect(Array.isArray(body.users)).toBe(true);
+          });
+      });
+      test("should return array of object each with correct properties", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.users).toHaveLength(4);
+            body.users.forEach((user) => {
+              expect(user).toEqual({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String),
+              });
+            });
+          });
+      });
+    });
   });
 });
