@@ -493,9 +493,16 @@ describe("APP", () => {
               });
             });
           });
-
       });
     });
   });
 });
+  describe ('GET API - summary of all the endpoint options for this API', () => {
+  test('responds with a JSON object summarising all the available endpoints', () => {
+      return request(app)
+      .get("/api")
+      .expect("")
+
+  })
+})
 })
