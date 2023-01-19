@@ -10,7 +10,8 @@ const {
   sendComment,
   getArticleComments,
   getUsers,
-  updateVotes
+  updateVotes, 
+  deleteComment
 } = require("./controllers");
 
 
@@ -31,6 +32,8 @@ app.post("/api/articles/:article_id/comments", sendComment);
 app.get('/api/users', getUsers)
 
 app.patch('/api/articles/:article_id', updateVotes)
+
+app.delete('/api/comments/:comment_id', deleteComment)
 
 app.use((err, request, response, next) => {
   if (err.status) {

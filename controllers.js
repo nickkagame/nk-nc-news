@@ -5,7 +5,8 @@ const {
   fetchArticleComments,
   postComment,
   fetchUsers,
-  patchVotes
+  patchVotes,
+  eraseComment
 } = require("./models");
 
 exports.getWelcomeMsg = (request, response, next) => {
@@ -80,5 +81,13 @@ exports.sendComment = (request, response, next) => {
 exports.getUsers = (request, response, next) => {
   fetchUsers().then((users) => {
     response.status(200).send({ users });
-  });
+  })
+  .catch(next)
+}
+
+exports.deleteComment = (request, response, next) => {
+  const {comment_id} = request.params
+  eraseComment(comment_id).then((deletedComment) => {
+    response.status(204).send(deletedComment)
+  })
 }
