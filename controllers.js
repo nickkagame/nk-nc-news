@@ -90,4 +90,5 @@ exports.deleteComment = (request, response, next) => {
   eraseComment(comment_id).then((deletedComment) => {
     response.status(204).send(deletedComment)
   })
+  .catch(next)
 }

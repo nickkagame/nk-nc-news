@@ -503,6 +503,22 @@ describe("APP", () => {
       .delete('/api/comments/3')
       .expect(204)
     })
+    test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
+      return request(app)
+        .delete("/api/comments/skunk")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad delete request");
+        });
+    });
+    test("error handling - should return 404 error with valid but no existent request ", () => {
+      return request(app)
+        .delete("/api/comments/124124")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
   });
 });
 })
