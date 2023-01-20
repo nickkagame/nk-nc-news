@@ -10,14 +10,15 @@ const {
   sendComment,
   getArticleComments,
   getUsers,
-  updateVotes,
-  getWithCCount
+  updateVotes, 
+  deleteComment,
+  getApi
 } = require("./controllers");
 
 
 app.use(express.json());
 
-app.get("/api/", getWelcomeMsg);
+app.get("/api/", getApi);
 
 app.get("/api/topics", getTopics);
 
@@ -33,10 +34,10 @@ app.get('/api/users', getUsers)
 
 app.patch('/api/articles/:article_id', updateVotes)
 
+app.delete('/api/comments/:comment_id', deleteComment)
 
 app.use((err, request, response, next) => {
   if (err.status) {
-    console.log(err)
     response.status(err.status).send({ msg: err.msg });
   } else {
     next(err);

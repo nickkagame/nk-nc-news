@@ -11,18 +11,6 @@ afterAll(() => {
 });
 
 describe("APP", () => {
-  describe("get welcome message", () => {
-    test("returns a status code of 200", () => {
-      return request(app).get("/api/").expect(200);
-    });
-    test("should return welcome message to the user", () => {
-      return request(app)
-        .get("/api")
-        .then(({ body }) => {
-          expect(body.msg).toEqual("Welcome!");
-        });
-    });
-  });
   describe("Testing GET /api/topics", () => {
     test("should return an array", () => {
       return request(app)
@@ -471,7 +459,7 @@ describe("APP", () => {
             });
         });
     });
-    describe("9_GET_USERS", () => {
+      describe("9_GET_USERS", () => {
       test("should return an array", () => {
         return request(app)
           .get("/api/users")
@@ -519,5 +507,29 @@ describe("APP", () => {
       });
     });
   });
+  describe('12 DELETE COMMENTS', () => {
+    test('will return a 204 once completed', () => {
+      return request(app)
+      .delete('/api/comments/3')
+      .expect(204)
+    })
+    test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
+      return request(app)
+        .delete("/api/comments/skunk")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad delete request");
+        });
+    });
+    test("error handling - should return 404 error with valid but no existent request ", () => {
+      return request(app)
+        .delete("/api/comments/124124")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment not found");
+        });
+    });
+  });
 });
-})
+
+});

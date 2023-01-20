@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+const fs = require('fs/promises')
 
 exports.fetchTopics = () => {
   return db.query(`SELECT * FROM topics;`).then((topics) => {
@@ -14,8 +15,6 @@ exports.fetchArticles = (topic, sort, order) => {
   const acceptedTopics = ['mitch', 'cats', 'paper', '', undefined];
   const acceptedSortBys = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'comment_count', 'article_img_url', 'votes', '', undefined];
   const acceptedOrderBys = ['desc', 'asc', '', undefined];
-  console.log(acceptedTopics.includes(topic))
-
 if(!acceptedTopics.includes(topic) || !acceptedOrderBys.includes(order) || !acceptedSortBys.includes(sort)){
   return Promise.reject({status: 400, msg: 'bad query request'})
 }
@@ -148,3 +147,24 @@ exports.fetchUsers = () => {
       return article.rows[0]
     })
   }
+
+
+  exports.eraseComment = (comment_id) => {
+    const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/);
+    console.log(acceptedInput.test(+comment_id))
+
+  if (acceptedInput.test(comment_id) === false) {
+    return Promise.reject({ status: 400, msg: "bad delete request" });
+  }
+
+    const query = `DELETE FROM comments WHERE comment_id = $1
+    RETURNING *;`
+    return db.query(query, [comment_id])
+    .then((comments) => {
+      if(comments.rowCount === 0){ 
+        return Promise.reject({status: 404, msg: 'comment not found'})
+      }
+      return comments.rows[0]
+    })
+  }
+

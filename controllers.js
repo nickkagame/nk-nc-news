@@ -4,9 +4,10 @@ const {
   fetchArticleById,
   fetchArticleComments,
   postComment,
-  fetchUsers,
-  patchVotes, 
-  fetchWithCCount
+  fetchUsers, 
+  patchVotes,
+  eraseComment, 
+  fetchApi
 } = require("./models");
 
 exports.getWelcomeMsg = (request, response, next) => {
@@ -82,9 +83,21 @@ exports.sendComment = (request, response, next) => {
 exports.getUsers = (request, response, next) => {
   fetchUsers().then((users) => {
     response.status(200).send({ users });
-  });
-  
-};
-
-
+  })
+  .catch(next)
 }
+
+exports.deleteComment = (request, response, next) => {
+  const {comment_id} = request.params
+  eraseComment(comment_id).then((deletedComment) => {
+    response.status(204).send(deletedComment)
+  })
+  .catch(next)
+}
+ 
+exports.getApi = (request, response, next) => {
+  fetchApi().then((obj) => {
+    response.status(200).send({obj});
+  })
+  .catch(next)
+};
