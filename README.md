@@ -1,5 +1,9 @@
 # NK News API
 
+# Link to hosted API
+
+https://nk-news.onrender.com/api
+
 # Project Summary
 
 An lite News application featuring stories posted by members of our community, with topics including cats, Mitch, coding, and much more! 
@@ -59,4 +63,15 @@ In you terminal run the following:
 
     npm install setup-dbs
 
- send run the seed function. 
+The seed function should run automatically when you run your tests.  If it is not present already, require in the Seed from your DB directory, and you Database connection.  
+Ensure you are running a before each function and after all function at the top of the test as follows :
+
+beforeEach(() => seed(testData));
+
+afterAll(() => {
+  return db.end();
+});
+
+## Version updates
+
+Node.js version 18.12.1 & Postgres version 2.5.12 or later are required 
