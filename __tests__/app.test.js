@@ -194,7 +194,7 @@ describe("APP", () => {
           });
       });
     });
-    
+
     describe("PATCH - update votes", () => {
       test("will respond with 200", () => {
         const votesObj = { inc_votes: 1 };
@@ -207,7 +207,7 @@ describe("APP", () => {
           .send(votesObj)
           .expect(200)
           .then(({ body }) => {
-            expect(Object.keys(body.article)).toHaveLength(8)
+            expect(Object.keys(body.article)).toHaveLength(8);
             expect(body.article).toEqual({
               author: expect.any(String),
               title: expect.any(String),
@@ -216,10 +216,9 @@ describe("APP", () => {
               topic: expect.any(String),
               created_at: "2020-07-09T20:11:00.000Z",
               votes: expect.any(Number),
-              article_img_url: expect.any(String)
+              article_img_url: expect.any(String),
             });
-
-            }) 
+          });
       });
       test("will respond with single article object with votes incremented +1", () => {
         const votesObj = { inc_votes: 1 };
@@ -228,7 +227,7 @@ describe("APP", () => {
           .send(votesObj)
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.votes).toEqual(101)
+            expect(body.article.votes).toEqual(101);
           });
       });
       test("will respond with article object with votes incremented -100", () => {
@@ -238,42 +237,42 @@ describe("APP", () => {
           .send(votesObj)
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.votes).toEqual(0)
+            expect(body.article.votes).toEqual(0);
           });
       });
-      test('error handling - will return 400 for invalid request', () => {
+      test("error handling - will return 400 for invalid request", () => {
         const votesObj = { inc_votes: -100 };
         return request(app)
-        .patch("/api/articles/qwrq")
-        .send(votesObj)
-        .expect(400)
-        .then(({body}) => {
-          expect(body.msg).toBe('bad article request')
-        })
-      })
-      test('error handling - will return 404 for valid but non existant article request', () => {
+          .patch("/api/articles/qwrq")
+          .send(votesObj)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("bad article request");
+          });
+      });
+      test("error handling - will return 404 for valid but non existant article request", () => {
         const votesObj = { inc_votes: -100 };
         return request(app)
-        .patch("/api/articles/12592")
-        .send(votesObj)
-        .expect(404)
-        .then(({body}) => {
-          expect(body.msg).toBe('article not found')
-        })
-      })
-      test('error handling - will return 400 for invalid inc_votes input', () => {
-        const votesObj = { inc_votes: 'string' };
+          .patch("/api/articles/12592")
+          .send(votesObj)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("article not found");
+          });
+      });
+      test("error handling - will return 400 for invalid inc_votes input", () => {
+        const votesObj = { inc_votes: "string" };
         return request(app)
-        .patch("/api/articles/1")
-        .send(votesObj)
-        .expect(400)
-        .then(({body}) => {
-          expect(body.msg).toBe('invalid votes input')
-        })
-      })
+          .patch("/api/articles/1")
+          .send(votesObj)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("invalid votes input");
+          });
+      });
     });
-    
-    describe('7/POST/api/articles/articleid/comment', () => {
+
+    describe("7/POST/api/articles/articleid/comment", () => {
       const commentToAdd = {
         username: "butter_bridge",
         body: "This article is amazing.  This has changed my life",
@@ -285,12 +284,14 @@ describe("APP", () => {
           .expect(201)
           .then(({ body }) => {
             expect(Object.keys(body.commentAdded)).toHaveLength(6);
-            expect(body.commentAdded).toHaveProperty("comment_id");
-            expect(body.commentAdded).toHaveProperty("article_id");
-            expect(body.commentAdded).toHaveProperty("body");
-            expect(body.commentAdded).toHaveProperty("author");
-            expect(body.commentAdded).toHaveProperty("created_at");
-            expect(body.commentAdded).toHaveProperty("votes");
+            expect(body.commentAdded).toEqual({
+              comment_id: expect.any(Number),
+              article_id: expect.any(Number),
+              body: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+            });
           });
       });
       test("error handling - should return 404 error with valid but non-existant article id", () => {
@@ -311,7 +312,7 @@ describe("APP", () => {
             expect(body.msg).toBe("bad post request");
           });
       });
-      test("error handling - should return 400 error with bad request for comment that is too short or too short", () => {
+      test("error handling - should return 400 error with bad request for comment that is too short", () => {
         const commentToAdd = {
           username: "butter_bridge",
           body: "This",
@@ -467,7 +468,7 @@ describe("APP", () => {
             expect(Array.isArray(body.users)).toBe(true);
           });
       });
-      test("should return array of object each with correct properties", () => {
+      test("should return array of objects each with correct properties", () => {
         return request(app)
           .get("/api/users")
           .expect(200)
@@ -482,6 +483,27 @@ describe("APP", () => {
             });
           });
 
+      });
+      describe("10 GET COMMENT COUNT", () => {
+        test("should return article object with all correct properties and comment count added and that comment count is a digit, not letter", () => {
+          return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({ body }) => {
+              expect(/^\d+$/.test(body.article.votes)).toBe(true);
+              expect(body.article).toEqual({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                body: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes:  expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String)
+              });
+            });
+        });
       });
     });
   });

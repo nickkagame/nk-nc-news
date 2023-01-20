@@ -4,7 +4,7 @@ const {
   fetchArticleById,
   fetchArticleComments,
   postComment,
-  fetchUsers,
+  fetchUsers, 
   patchVotes,
   eraseComment, 
   fetchApi
@@ -50,7 +50,7 @@ exports.getArticleComments = (request, response, next) => {
       return fetchArticleComments(article_id);
     })
     .then((comments) => {
-      response.status(200).send({ comments: comments });
+      response.status(200).send({ comments});
     })
     .catch(next);
 };
@@ -67,7 +67,8 @@ exports.updateVotes = (request, response, next) => {
       response.status(200).send({ article });
     })
     .catch(next);
-  }
+}
+
 
 exports.sendComment = (request, response, next) => {
   const comment = request.body;
