@@ -536,7 +536,6 @@ describe("APP", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          console.log(body.obj);
           expect(body.obj).toHaveProperty("GET /api");
           expect(body.obj).toHaveProperty("GET /api/topics");
           expect(body.obj).toHaveProperty("GET /api/articles");

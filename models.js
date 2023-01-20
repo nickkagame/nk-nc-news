@@ -151,7 +151,6 @@ exports.fetchUsers = () => {
 
   exports.eraseComment = (comment_id) => {
     const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/);
-    console.log(acceptedInput.test(+comment_id))
 
   if (acceptedInput.test(comment_id) === false) {
     return Promise.reject({ status: 400, msg: "bad delete request" });
