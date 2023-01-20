@@ -159,9 +159,3 @@ exports.fetchUsers = () => {
       return comments.rows[0]
     })
   }
-
-  exports.fetchApi = () => { 
-    return fs.readFile('./endpoints.json', 'utf-8').then((data)=> {
-      return JSON.parse(data)
-    })
-  }
