@@ -29,9 +29,9 @@ The following DEVELOPER DEPENDENCIES are required
 
 To install each of these, enter the following in the terminal:
 
-    npm install --save -D **insert name, with no quotation marks***
+    npm install --save -D ** then insert name, with no quotation marks***
 
-    (no quotations marks require)
+   
 
 The following DEPENDENCIES are required for the app to run. 
 
@@ -42,3 +42,21 @@ The following DEPENDENCIES are required for the app to run.
     "pg": "^8.7.3",
     "sort": "^0.0.3",
     "supertest": "^6.3.3"
+
+To install each of these, enter the following in the terminal: 
+
+    npm install ** then insert name, with no quotation marks***
+
+## Setup local databases and Run Seed
+
+Before writing or running any code, you will first need to set local test and develop databases. 
+
+The following script should already be in your package.json under 'scripts'
+
+ "setup-dbs": "psql -f ./db/setup.sql",
+
+In you terminal run the following: 
+
+    npm install setup-dbs
+
+ send run the seed function. 
