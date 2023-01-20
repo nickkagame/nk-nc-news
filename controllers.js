@@ -6,7 +6,7 @@ const {
   postComment,
   fetchUsers, 
   patchVotes,
-  eraseComment, 
+  eraseComment,
   fetchApi
 } = require("./models");
 
@@ -94,7 +94,7 @@ exports.deleteComment = (request, response, next) => {
   })
   .catch(next)
 }
- 
+
 exports.getApi = (request, response, next) => {
   fetchApi().then((obj) => {
     response.status(200).send({obj});

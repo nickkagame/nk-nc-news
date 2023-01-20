@@ -404,20 +404,19 @@ describe("APP", () => {
           return request(app)
             .get("/api/articles/?order=asc")
             .expect(200)
-            .then((({ body }) => {
+            .then(({ body }) => {
               for (let i = 0; i < body.articles.length - 1; i++)
                 expect(new Date(body.articles[i].created_at)).toBeBefore(
                   new Date(body.articles[i + 1].created_at)
                 );
-            })
-            );
+            });
         });
         test("If query is ommited all articles are returned", () => {
           return request(app)
             .get("/api/articles/?topic=")
             .expect(200)
-            .then((({ body }) => {
-              expect(body.articles).toHaveLength(12)
+            .then(({ body }) => {
+              expect(body.articles).toHaveLength(12);
               body.articles.forEach((article) => {
                 expect(article).toEqual({
                   article_id: expect.any(Number),
@@ -431,8 +430,7 @@ describe("APP", () => {
                   votes: expect.any(Number),
                 });
               });
-            })
-            );
+            });
         });
         test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
           return request(app)
@@ -458,31 +456,53 @@ describe("APP", () => {
               expect(body.msg).toBe("bad query request");
             });
         });
-    });
-      describe("9_GET_USERS", () => {
-      test("should return an array", () => {
-        return request(app)
-          .get("/api/users")
-          .expect(200)
-          .then(({ body }) => {
-            expect(Array.isArray(body.users)).toBe(true);
-          });
       });
-      test("should return array of objects each with correct properties", () => {
-        return request(app)
-          .get("/api/users")
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.users).toHaveLength(4);
-            body.users.forEach((user) => {
-              expect(user).toEqual({
-                username: expect.any(String),
-                name: expect.any(String),
-                avatar_url: expect.any(String),
+      describe("9_GET_USERS", () => {
+        test("should return an array", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(Array.isArray(body.users)).toBe(true);
+            });
+        });
+        test("should return array of object each with correct properties", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.users).toHaveLength(4);
+              body.users.forEach((user) => {
+                expect(user).toEqual({
+                  username: expect.any(String),
+                  name: expect.any(String),
+                  avatar_url: expect.any(String),
+                });
               });
             });
+        });
+      });
+    });
+    describe("12 DELETE COMMENTS", () => {
+      test("will return a 204 once completed", () => {
+        return request(app).delete("/api/comments/3").expect(204);
+      });
+      test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
+        return request(app)
+          .delete("/api/comments/skunk")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("bad delete request");
           });
-
+      });
+      
+      test("error handling - should return 404 error with valid but no existent request ", () => {
+        return request(app)
+          .delete("/api/comments/124124")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("comment not found");
+          });
       });
       describe("10 GET COMMENT COUNT", () => {
         test("should return article object with all correct properties and comment count added and that comment count is a digit, not letter", () => {
@@ -507,29 +527,26 @@ describe("APP", () => {
       });
     });
   });
-  describe('12 DELETE COMMENTS', () => {
-    test('will return a 204 once completed', () => {
-      return request(app)
-      .delete('/api/comments/3')
-      .expect(204)
-    })
-    test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
-      return request(app)
-        .delete("/api/comments/skunk")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("bad delete request");
-        });
+  describe("GET API - summary of all the endpoint options for this API", () => {
+    test("responds with 200 code", () => {
+      return request(app).get("/api").expect(200);
     });
-    test("error handling - should return 404 error with valid but no existent request ", () => {
+    test("should return object with the correct API titles", () => {
       return request(app)
-        .delete("/api/comments/124124")
-        .expect(404)
+        .get("/api")
+        .expect(200)
         .then(({ body }) => {
-          expect(body.msg).toBe("comment not found");
+          console.log(body.obj);
+          expect(body.obj).toHaveProperty("GET /api");
+          expect(body.obj).toHaveProperty("GET /api/topics");
+          expect(body.obj).toHaveProperty("GET /api/articles");
+          expect(body.obj).toHaveProperty('GET /api/articles/:article_id');
+          expect(body.obj).toHaveProperty('GET /api/articles/:article_id/comments');
+          expect(body.obj).toHaveProperty("POST /api/articles/:article_id/comments");
+          expect(body.obj).toHaveProperty("GET /api/users");
         });
     });
   });
 });
 
-});
+

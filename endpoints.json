@@ -11,7 +11,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
@@ -23,5 +23,122 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an single article with input ID number",
+    "queries": [],
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "'Seven inspirational thought leaders from Manchester UK'",
+      "topic": "'mitch'",
+      "author": "rogersop",
+      "body": "Who are we kidding, there is only one, and it's Mitch!",
+      "created_at": 1589433300000,
+     " article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 12 
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an all the comments for an article with the given ID number",
+    "queries": [],
+    "exampleResponse":  [{
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      "votes": 14,
+     " author": "butter_bridge",
+      "article_id": 1,
+      "created_at": 1604113380000
+    },
+    {
+      "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+      "votes": 100,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1583025180000
+    },
+    {
+      "body": " I carry a log — yes. Is it funny to you? It is not to me.",
+      "votes": -100,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1582459260000
+    },
+    {
+      "body": "I hate streaming noses",
+      "votes": 0,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1604437200000
+    },
+    {
+      "body": "I hate streaming eyes even more",
+      "votes": 0,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1586642520000
+    },
+    {
+      "body": "Lobster pot",
+      "votes": 0,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1589577540000
+    },
+    {
+      "body": "Delicious crackerbreads",
+      "votes": 0,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1586899140000
+    },
+    {
+      "body": "Superficially charming",
+      "votes": 0,
+      "author": "icellusedkars",
+      "article_id": 1,
+      "created_at": 1577848080000
+    }]
+  }, 
+  "POST /api/articles/:article_id/comments": {
+    "description": "Post your comment on an article!",
+    "queries": [],
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "---Your comment here---",
+      "topic": "mitch",
+      "author": "---Your username here---",
+      "body": "xxxxxxxxxxxxx",
+      "created_at": 1589433300000,
+     " article_img_url":
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 13 
+    }
+  }, 
+  "GET /api/users": {
+    "description": "serves all news app users",
+    "queries": [],
+    "exampleResponse":[
+      {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      },
+      {
+        "username": "icellusedkars",
+        "name": "sam",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+      },
+      {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      },
+      {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url":
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
+    ]
   }
 }
