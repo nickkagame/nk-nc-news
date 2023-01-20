@@ -11,18 +11,6 @@ afterAll(() => {
 });
 
 describe("APP", () => {
-  describe("get welcome message", () => {
-    test("returns a status code of 200", () => {
-      return request(app).get("/api/").expect(200);
-    });
-    test("should return welcome message to the user", () => {
-      return request(app)
-        .get("/api")
-        .then(({ body }) => {
-          expect(body.msg).toEqual("Welcome!");
-        });
-    });
-  });
   describe("Testing GET /api/topics", () => {
     test("should return an array", () => {
       return request(app)
@@ -521,4 +509,21 @@ describe("APP", () => {
     });
   });
 });
-})
+describe("GET API - summary of all the endpoint options for this API", () => {
+    test("responds with 200 code", () => {
+      return request(app)
+      .get("/api").expect(200);
+    });
+    test("should return welcome message to the user", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body.obj)
+          expect(body.obj).toHaveProperty("GET /api")
+          expect(body.obj).toHaveProperty("GET /api/topics")
+          expect(body.obj).toHaveProperty("GET /api/articles")
+            });
+          });
+  });
+});
