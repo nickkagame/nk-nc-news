@@ -284,12 +284,14 @@ describe("APP", () => {
           .expect(201)
           .then(({ body }) => {
             expect(Object.keys(body.commentAdded)).toHaveLength(6);
-            expect(body.commentAdded).toHaveProperty("comment_id");
-            expect(body.commentAdded).toHaveProperty("article_id");
-            expect(body.commentAdded).toHaveProperty("body");
-            expect(body.commentAdded).toHaveProperty("author");
-            expect(body.commentAdded).toHaveProperty("created_at");
-            expect(body.commentAdded).toHaveProperty("votes");
+            expect(body.commentAdded).toEqual({
+              comment_id: expect.any(Number),
+              article_id: expect.any(Number),
+              body: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+            });
           });
       });
       test("error handling - should return 404 error with valid but non-existant article id", () => {
@@ -310,7 +312,7 @@ describe("APP", () => {
             expect(body.msg).toBe("bad post request");
           });
       });
-      test("error handling - should return 400 error with bad request for comment that is too short or too short", () => {
+      test("error handling - should return 400 error with bad request for comment that is too short", () => {
         const commentToAdd = {
           username: "butter_bridge",
           body: "This",
@@ -493,6 +495,7 @@ describe("APP", () => {
             expect(body.msg).toBe("bad delete request");
           });
       });
+      
       test("error handling - should return 404 error with valid but no existent request ", () => {
         return request(app)
           .delete("/api/comments/124124")
@@ -500,6 +503,27 @@ describe("APP", () => {
           .then(({ body }) => {
             expect(body.msg).toBe("comment not found");
           });
+      });
+      describe("10 GET COMMENT COUNT", () => {
+        test("should return article object with all correct properties and comment count added and that comment count is a digit, not letter", () => {
+          return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({ body }) => {
+              expect(/^\d+$/.test(body.article.votes)).toBe(true);
+              expect(body.article).toEqual({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                body: expect.any(String),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes:  expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String)
+              });
+            });
+        });
       });
     });
   });
@@ -524,3 +548,5 @@ describe("APP", () => {
     });
   });
 });
+
+

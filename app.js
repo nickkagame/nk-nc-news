@@ -11,7 +11,7 @@ const {
   getArticleComments,
   getUsers,
   updateVotes, 
-  deleteComment, 
+  deleteComment,
   getApi
 } = require("./controllers");
 
