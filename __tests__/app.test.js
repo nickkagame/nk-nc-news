@@ -11,18 +11,6 @@ afterAll(() => {
 });
 
 describe("APP", () => {
-  describe("get welcome message", () => {
-    test("returns a status code of 200", () => {
-      return request(app).get("/api/").expect(200);
-    });
-    test("should return welcome message to the user", () => {
-      return request(app)
-        .get("/api")
-        .then(({ body }) => {
-          expect(body.msg).toEqual("Welcome!");
-        });
-    });
-  });
   describe("Testing GET /api/topics", () => {
     test("should return an array", () => {
       return request(app)
@@ -206,7 +194,7 @@ describe("APP", () => {
           });
       });
     });
-    
+
     describe("PATCH - update votes", () => {
       test("will respond with 200", () => {
         const votesObj = { inc_votes: 1 };
@@ -219,7 +207,7 @@ describe("APP", () => {
           .send(votesObj)
           .expect(200)
           .then(({ body }) => {
-            expect(Object.keys(body.article)).toHaveLength(8)
+            expect(Object.keys(body.article)).toHaveLength(8);
             expect(body.article).toEqual({
               author: expect.any(String),
               title: expect.any(String),
@@ -228,10 +216,9 @@ describe("APP", () => {
               topic: expect.any(String),
               created_at: "2020-07-09T20:11:00.000Z",
               votes: expect.any(Number),
-              article_img_url: expect.any(String)
+              article_img_url: expect.any(String),
             });
-
-            }) 
+          });
       });
       test("will respond with single article object with votes incremented +1", () => {
         const votesObj = { inc_votes: 1 };
@@ -240,7 +227,7 @@ describe("APP", () => {
           .send(votesObj)
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.votes).toEqual(101)
+            expect(body.article.votes).toEqual(101);
           });
       });
       test("will respond with article object with votes incremented -100", () => {
@@ -250,42 +237,42 @@ describe("APP", () => {
           .send(votesObj)
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.votes).toEqual(0)
+            expect(body.article.votes).toEqual(0);
           });
       });
-      test('error handling - will return 400 for invalid request', () => {
+      test("error handling - will return 400 for invalid request", () => {
         const votesObj = { inc_votes: -100 };
         return request(app)
-        .patch("/api/articles/qwrq")
-        .send(votesObj)
-        .expect(400)
-        .then(({body}) => {
-          expect(body.msg).toBe('bad article request')
-        })
-      })
-      test('error handling - will return 404 for valid but non existant article request', () => {
+          .patch("/api/articles/qwrq")
+          .send(votesObj)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("bad article request");
+          });
+      });
+      test("error handling - will return 404 for valid but non existant article request", () => {
         const votesObj = { inc_votes: -100 };
         return request(app)
-        .patch("/api/articles/12592")
-        .send(votesObj)
-        .expect(404)
-        .then(({body}) => {
-          expect(body.msg).toBe('article not found')
-        })
-      })
-      test('error handling - will return 400 for invalid inc_votes input', () => {
-        const votesObj = { inc_votes: 'string' };
+          .patch("/api/articles/12592")
+          .send(votesObj)
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("article not found");
+          });
+      });
+      test("error handling - will return 400 for invalid inc_votes input", () => {
+        const votesObj = { inc_votes: "string" };
         return request(app)
-        .patch("/api/articles/1")
-        .send(votesObj)
-        .expect(400)
-        .then(({body}) => {
-          expect(body.msg).toBe('invalid votes input')
-        })
-      })
+          .patch("/api/articles/1")
+          .send(votesObj)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("invalid votes input");
+          });
+      });
     });
-    
-    describe('7/POST/api/articles/articleid/comment', () => {
+
+    describe("7/POST/api/articles/articleid/comment", () => {
       const commentToAdd = {
         username: "butter_bridge",
         body: "This article is amazing.  This has changed my life",
@@ -415,20 +402,19 @@ describe("APP", () => {
           return request(app)
             .get("/api/articles/?order=asc")
             .expect(200)
-            .then((({ body }) => {
+            .then(({ body }) => {
               for (let i = 0; i < body.articles.length - 1; i++)
                 expect(new Date(body.articles[i].created_at)).toBeBefore(
                   new Date(body.articles[i + 1].created_at)
                 );
-            })
-            );
+            });
         });
         test("If query is ommited all articles are returned", () => {
           return request(app)
             .get("/api/articles/?topic=")
             .expect(200)
-            .then((({ body }) => {
-              expect(body.articles).toHaveLength(12)
+            .then(({ body }) => {
+              expect(body.articles).toHaveLength(12);
               body.articles.forEach((article) => {
                 expect(article).toEqual({
                   article_id: expect.any(Number),
@@ -442,8 +428,7 @@ describe("APP", () => {
                   votes: expect.any(Number),
                 });
               });
-            })
-            );
+            });
         });
         test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
           return request(app)
@@ -469,56 +454,73 @@ describe("APP", () => {
               expect(body.msg).toBe("bad query request");
             });
         });
-    });
-      describe("9_GET_USERS", () => {
-      test("should return an array", () => {
-        return request(app)
-          .get("/api/users")
-          .expect(200)
-          .then(({ body }) => {
-            expect(Array.isArray(body.users)).toBe(true);
-          });
       });
-      test("should return array of object each with correct properties", () => {
-        return request(app)
-          .get("/api/users")
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.users).toHaveLength(4);
-            body.users.forEach((user) => {
-              expect(user).toEqual({
-                username: expect.any(String),
-                name: expect.any(String),
-                avatar_url: expect.any(String),
+      describe("9_GET_USERS", () => {
+        test("should return an array", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(Array.isArray(body.users)).toBe(true);
+            });
+        });
+        test("should return array of object each with correct properties", () => {
+          return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.users).toHaveLength(4);
+              body.users.forEach((user) => {
+                expect(user).toEqual({
+                  username: expect.any(String),
+                  name: expect.any(String),
+                  avatar_url: expect.any(String),
+                });
               });
             });
+        });
+      });
+    });
+    describe("12 DELETE COMMENTS", () => {
+      test("will return a 204 once completed", () => {
+        return request(app).delete("/api/comments/3").expect(204);
+      });
+      test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
+        return request(app)
+          .delete("/api/comments/skunk")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("bad delete request");
           });
-
+      });
+      test("error handling - should return 404 error with valid but no existent request ", () => {
+        return request(app)
+          .delete("/api/comments/124124")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("comment not found");
+          });
       });
     });
   });
-  describe('12 DELETE COMMENTS', () => {
-    test('will return a 204 once completed', () => {
-      return request(app)
-      .delete('/api/comments/3')
-      .expect(204)
-    })
-    test("error handling - should return 400 error with bad request / SQL injection attempt", () => {
-      return request(app)
-        .delete("/api/comments/skunk")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("bad delete request");
-        });
+  describe("GET API - summary of all the endpoint options for this API", () => {
+    test("responds with 200 code", () => {
+      return request(app).get("/api").expect(200);
     });
-    test("error handling - should return 404 error with valid but no existent request ", () => {
+    test("should return object with the correct API titles", () => {
       return request(app)
-        .delete("/api/comments/124124")
-        .expect(404)
+        .get("/api")
+        .expect(200)
         .then(({ body }) => {
-          expect(body.msg).toBe("comment not found");
+          console.log(body.obj);
+          expect(body.obj).toHaveProperty("GET /api");
+          expect(body.obj).toHaveProperty("GET /api/topics");
+          expect(body.obj).toHaveProperty("GET /api/articles");
+          expect(body.obj).toHaveProperty('GET /api/articles/:article_id');
+          expect(body.obj).toHaveProperty('GET /api/articles/:article_id/comments');
+          expect(body.obj).toHaveProperty("POST /api/articles/:article_id/comments");
+          expect(body.obj).toHaveProperty("GET /api/users");
         });
     });
   });
 });
-})

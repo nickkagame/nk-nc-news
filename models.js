@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+const fs = require('fs/promises')
 
 exports.fetchTopics = () => {
   return db.query(`SELECT * FROM topics;`).then((topics) => {
@@ -156,5 +157,11 @@ exports.fetchUsers = () => {
         return Promise.reject({status: 404, msg: 'comment not found'})
       }
       return comments.rows[0]
+    })
+  }
+
+  exports.fetchApi = () => { 
+    return fs.readFile('./endpoints.json', 'utf-8').then((data)=> {
+      return JSON.parse(data)
     })
   }

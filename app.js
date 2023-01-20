@@ -11,13 +11,14 @@ const {
   getArticleComments,
   getUsers,
   updateVotes, 
-  deleteComment
+  deleteComment, 
+  getApi
 } = require("./controllers");
 
 
 app.use(express.json());
 
-app.get("/api/", getWelcomeMsg);
+app.get("/api/", getApi);
 
 app.get("/api/topics", getTopics);
 
