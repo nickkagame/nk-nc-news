@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-
+const apiRouter = require('./api-router');
+const cors = require('cors');
 
 const {
   getWelcomeMsg,
@@ -15,6 +16,10 @@ const {
   getApi
 } = require("./controllers");
 
+
+app.use(cors());
+
+// app.use('/api', apiRouter)
 
 app.use(express.json());
 

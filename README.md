@@ -6,7 +6,7 @@ https://nk-news.onrender.com/api
 
 # Project Summary
 
-An lite News application featuring stories posted by members of our community, with topics including cats, Mitch, coding, and much more! 
+A lite News application featuring stories posted by members of our community, with topics including cats, Mitch, coding, and much more! 
 
 # Instructions:
 ## Connecting locally to the databases
@@ -63,7 +63,7 @@ In you terminal run the following:
 
     npm install setup-dbs
 
-The seed function should run automatically when you run your tests.  If it is not present already, require in the Seed from your DB directory, and you Database connection.  
+The seed function should run automatically when you run your tests.  If it is not present already, require in the Seed from your DB directory, and your Database connection.  
 Ensure you are running a before each function and after all function at the top of the test as follows :
 
 beforeEach(() => seed(testData));
