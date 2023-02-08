@@ -385,7 +385,7 @@ describe("APP", () => {
             .expect(200)
             .then(({ body }) => {
               for (let i = 0; i < body.articles.length - 1; i++)
-                expect(+body.articles[i].comment_count).toBeLessThanOrEqual(
+                expect(+body.articles[i].comment_count).toBeGreaterThanOrEqual(
                   +body.articles[i + 1].comment_count
                 );
             });
@@ -396,7 +396,7 @@ describe("APP", () => {
             .expect(200)
             .then(({ body }) => {
               for (let i = 0; i < body.articles.length - 1; i++)
-                expect(+body.articles[i].votes).toBeLessThanOrEqual(
+                expect(+body.articles[i].votes).toBeGreaterThanOrEqual(
                   +body.articles[i + 1].votes
                 );
             });

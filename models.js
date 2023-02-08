@@ -27,7 +27,7 @@ LEFT JOIN comments ON articles.article_id = comments.article_id
 GROUP BY articles.article_id `
   
   if(sort && !order){
-    query += ` ORDER BY ${sort}`
+    query += ` ORDER BY ${sort} DESC`
   } 
   if(!sort && !order){
     query += ` ORDER BY articles.created_at DESC`
