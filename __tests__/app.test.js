@@ -390,6 +390,9 @@ describe("APP", () => {
                 );
             });
         });
+
+        
+
         test("Query to sort by any column 2", () => {
           return request(app)
             .get("/api/articles/?sort=votes")
@@ -401,6 +404,31 @@ describe("APP", () => {
                 );
             });
         });
+
+        test("Query to sort by any column ascending", () => {
+          return request(app)
+            .get("/api/articles/?sort=comment_count&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(+body.articles[i].comment_count).toBeLessThanOrEqual(
+                  +body.articles[i + 1].comment_count
+                );
+            });
+        });
+
+        test("Query to sort by any column 2 ascending", () => {
+          return request(app)
+            .get("/api/articles/?sort=votes&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+              for (let i = 0; i < body.articles.length - 1; i++)
+                expect(+body.articles[i].votes).toBeLessThanOrEqual(
+                  +body.articles[i + 1].votes
+                );
+            });
+        });
+
         test("Query to order by decending", () => {
           return request(app)
             .get("/api/articles/?order=asc")

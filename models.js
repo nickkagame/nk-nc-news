@@ -12,6 +12,8 @@ exports.fetchTopics = () => {
 
 exports.fetchArticles = (topic, sort, order) => {
 
+  
+
   const acceptedTopics = ['mitch', 'cats', 'paper', '', undefined];
   const acceptedSortBys = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'comment_count', 'article_img_url', 'votes', '', undefined];
   const acceptedOrderBys = ['desc', 'asc', '', undefined];
@@ -36,7 +38,8 @@ GROUP BY articles.article_id `
   if(order && !sort){
     query += ` ORDER BY articles.created_at ${order}`
   } 
-  if(order & sort){
+  if(order && sort){
+   
     query += ` ORDER BY ${sort} ${order}` 
   }
 
