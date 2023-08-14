@@ -23,6 +23,10 @@ app.use(cors());
 
 app.use(express.json());
 
+app.get('/api/healthcheck', (req, res) => {
+  res.status(200).send({msg: 'everything is working fine!'})
+})
+
 app.get("/api/", getApi);
 
 app.get("/api/topics", getTopics);

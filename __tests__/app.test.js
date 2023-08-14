@@ -12,6 +12,16 @@ afterAll(() => {
 });
 
 describe("APP", () => {
+  describe('/api/healthcheck', () => {
+    test('200 - API healthcheck responds with 200 and a welcome message', () => { 
+        return request(app)
+        .get('/api/healthcheck')
+        .expect(200)
+        .then(({body}) => {
+        expect(body.msg).toBe('everything is working fine!')          
+        })
+    })
+  })
   describe("Testing GET /api/topics", () => {
     test("should return an array", () => {
       return request(app)
@@ -29,6 +39,7 @@ describe("APP", () => {
           expect(body.topics.length).toBeGreaterThan(0);
           expect(body.topics).toHaveLength(3);
           body.topics.forEach((topic) => {
+            expect(Object.keys(topic)).toHaveLength(2)
             expect(topic).toHaveProperty("slug");
             expect(topic).toHaveProperty("description");
           });
