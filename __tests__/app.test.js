@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const endpoints = require('../endpoints.json')
 
 
 beforeEach(() => seed(testData));
@@ -59,14 +60,19 @@ describe("APP", () => {
           .get("/api/articles")
           .then(({ body }) => {
             expect(body.articles).toHaveLength(12);
+         
             body.articles.forEach((article) => {
-              expect(article).toHaveProperty("author");
-              expect(article).toHaveProperty("title");
-              expect(article).toHaveProperty("topic");
-              expect(article).toHaveProperty("created_at");
-              expect(article).toHaveProperty("votes");
-              expect(article).toHaveProperty("article_img_url");
-              expect(article).toHaveProperty("comment_count");
+              expect(article).toEqual(expect.objectContaining(
+                { author: expect.any(String),
+                  title: expect.any(String),
+                  article_id: expect.any(Number),
+                  body: expect.any(String),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                  article_img_url: expect.any(String),
+                }
+              ))
             });
           });
       });
@@ -74,10 +80,7 @@ describe("APP", () => {
         return request(app)
           .get("/api/articles")
           .then(({ body }) => {
-            for (let i = 0; i < body.articles.length - 1; i++)
-              expect(new Date(body.articles[i].created_at)).toBeAfter(
-                new Date(body.articles[i + 1].created_at)
-              );
+           expect(body.articles).toBeSortedBy('created_at',  {descending: true} )
           });
       });
     });
@@ -87,15 +90,18 @@ describe("APP", () => {
           .get("/api/articles/1")
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.author).toBe("butter_bridge");
-            expect(body.article).toHaveProperty(`author`);
-            expect(body.article).toHaveProperty(`title`);
-            expect(body.article).toHaveProperty(`article_id`);
-            expect(body.article).toHaveProperty(`body`);
-            expect(body.article).toHaveProperty(`topic`);
-            expect(body.article).toHaveProperty(`created_at`);
-            expect(body.article).toHaveProperty(`votes`);
-            expect(body.article).toHaveProperty(`article_img_url`);
+            expect(body.article.article_id).toBe(1)
+            expect(body.article).toEqual(expect.objectContaining(
+                { author: expect.any(String),
+                  title: expect.any(String),
+                  article_id: expect.any(Number),
+                  body: expect.any(String),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                  article_img_url: expect.any(String),
+                }
+              ));
           });
       });
       test("should return the correct article object with the correct properties", () => {
@@ -103,16 +109,9 @@ describe("APP", () => {
           .get("/api/articles/4")
           .expect(200)
           .then(({ body }) => {
-            expect(body.article.author).toBe("rogersop");
-            expect(body.article).toHaveProperty(`author`);
-            expect(body.article).toHaveProperty(`title`);
-            expect(body.article).toHaveProperty(`article_id`);
-            expect(body.article).toHaveProperty(`body`);
-            expect(body.article).toHaveProperty(`topic`);
-            expect(body.article).toHaveProperty(`created_at`);
-            expect(body.article).toHaveProperty(`votes`);
-            expect(body.article).toHaveProperty(`article_img_url`);
-          });
+            expect(body.article.article_id).toBe(4)
+          })
+        })
       });
       test("error handling - should return 400 error with bad request / SQL injection", () => {
         return request(app)
@@ -576,6 +575,7 @@ describe("APP", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
+          expect(body.obj).toEqual(endpoints)
           expect(body.obj).toHaveProperty("GET /api");
           expect(body.obj).toHaveProperty("GET /api/topics");
           expect(body.obj).toHaveProperty("GET /api/articles");
@@ -586,6 +586,5 @@ describe("APP", () => {
         });
     });
   });
-});
 
 

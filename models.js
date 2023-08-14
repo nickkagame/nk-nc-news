@@ -11,16 +11,12 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticles = (topic, sort, order) => {
-
-  
-
   const acceptedTopics = ['mitch', 'cats', 'paper', '', undefined];
   const acceptedSortBys = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'comment_count', 'article_img_url', 'votes', '', undefined];
   const acceptedOrderBys = ['desc', 'asc', '', undefined];
 if(!acceptedTopics.includes(topic) || !acceptedOrderBys.includes(order) || !acceptedSortBys.includes(sort)){
   return Promise.reject({status: 400, msg: 'bad query request'})
 }
-
 
   let query = 
   `SELECT articles.*, COUNT(comments.article_id) AS comment_count
@@ -66,13 +62,13 @@ exports.fetchArticleById = (article_id) => {
     .query(`SELECT articles.*, COUNT(comments.article_id) AS comment_count
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id
-    WHERE articles.article_id = ${article_id}
-    GROUP BY articles.article_id ORDER BY articles.created_at DESC`)
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id ORDER BY articles.created_at DESC`, [article_id])
     .then((article) => {
-      if (article.rows.length < 1) {
+      if (article.rows.length === 0) {
         return Promise.reject({ status: 404, msg: "article not found" });
       }
-      return article.rows.pop();
+      return article.rows[0];
     });
 };
 

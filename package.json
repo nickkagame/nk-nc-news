@@ -27,6 +27,7 @@
     "jest": "^27.5.1",
     "jest-date": "^1.1.4",
     "jest-extended": "^2.0.0",
+    "jest-sorted": "^1.0.14",
     "sorted": "^0.1.1",
     "supertest": "^6.3.3"
   },
@@ -42,7 +43,7 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "jest-extended/all"
+      "jest-extended/all", "jest-sorted"
     ]
   }
 }
