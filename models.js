@@ -3,7 +3,7 @@ const fs = require('fs/promises')
 
 exports.fetchTopics = () => {
   return db.query(`SELECT * FROM topics;`).then((topics) => {
-    if (topics.rows.length === 0) {
+    if (!topics.rows.length) {
       return Promise.reject({ status: 404, msg: "topics not found" });
     }
     return topics.rows;
@@ -14,6 +14,7 @@ exports.fetchArticles = (topic, sort, order) => {
   const acceptedTopics = ['mitch', 'cats', 'paper', '', undefined];
   const acceptedSortBys = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'comment_count', 'article_img_url', 'votes', '', undefined];
   const acceptedOrderBys = ['desc', 'asc', '', undefined];
+
 if(!acceptedTopics.includes(topic) || !acceptedOrderBys.includes(order) || !acceptedSortBys.includes(sort)){
   return Promise.reject({status: 400, msg: 'bad query request'})
 }
@@ -74,24 +75,32 @@ exports.fetchArticleById = (article_id) => {
 
 
 
-
-
 exports.fetchArticleComments = (article_id) => {
   const acceptedInput = new RegExp(/^\d+(?:\.\d{1,2})?$/
 )
 if(acceptedInput.test(article_id) === false) {
   return Promise.reject({status: 400, msg: 'bad article request'})
 }
-  const query = `SELECT * FROM comments  WHERE article_id = $1`
+  const query = `SELECT * FROM comments  WHERE article_id = $1 ORDER BY comments.created_at DESC`
   return db.query(query, [article_id])
   .then((comments) => {
-    return comments.rows
+    if(!comments.rows.length){   
+      return this.fetchArticleById(article_id)
+    } else {
+      return comments.rows
+    }
+  })
+  .then((data) => {
+    if(data.article_id){
+      return []
+    }
+    return data
   })
 }
 
 exports.postComment = (comment, article_id) => {
   //error handler 1 - comment to short or object is in wrong format
-  if (comment.body.length < 10 || Object.keys(comment).length > 2) {
+  if (!comment.body || !comment.username || comment.body.length < 10 || Object.keys(comment).length > 2) {
     return Promise.reject({
       status: 400,
       msg: "bad post request - comment format error",
@@ -102,22 +111,14 @@ exports.postComment = (comment, article_id) => {
   if (acceptedInput.test(article_id) === false) {
     return Promise.reject({ status: 400, msg: "bad post request" });
   }
-  const query = `SELECT author FROM articles WHERE article_id = $1`;
-  return db.query(query, [article_id]).then((result) => {
-    if (result.rowCount === 0) {
-      return Promise.reject({ status: 404, msg: "article not found" });
-    }
-    const author = result.rows[0].author;
     return db
       .query(
         `INSERT INTO comments (article_id, body, author) VALUES ($1, $2, $3) RETURNING *;`,
         [article_id, comment.body, comment.username]
       )
-      .then((result) => {
-        let comment = result.rows.pop();
-        return comment;
+      .then((comment) => {
+       return comment.rows[0];
       });
-  });
 };
 
 exports.fetchUsers = () => {
