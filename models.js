@@ -40,12 +40,18 @@ GROUP BY articles.article_id `
     query += ` ORDER BY ${sort} ${order}` 
   }
 
-  if(topic !== undefined && topic !== ''){
-    query = `SELECT articles.*, COUNT(comments.article_id) AS comment_count
+  if(topic){
+    queryStr = `SELECT articles.*, COUNT(comments.article_id) AS comment_count
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id
-    WHERE topic = '${topic}'
+    WHERE topic = $1
     GROUP BY articles.article_id ORDER BY articles.created_at DESC`
+
+    return db
+    .query(queryStr, [topic])
+    .then((articles) => {
+      return articles.rows;
+    });
     }
   return db
     .query(query)

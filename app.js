@@ -4,7 +4,6 @@ const apiRouter = require('./api-router');
 const cors = require('cors');
 
 const {
-  getWelcomeMsg,
   getTopics,
   getArticles,
   getArticlesById,
